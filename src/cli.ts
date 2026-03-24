@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { auto, status, resume } from "./anvil.js";
+import { auto, status, resume, report } from "./anvil.js";
 
 const program = new Command();
 
@@ -116,6 +116,14 @@ git:
     writeFileSync(resolve(anvilDir, "config.yaml"), configContent);
     console.log(`\n  .anvil/ 초기화 완료: ${anvilDir}`);
     console.log(`  다음 단계: .anvil/SPEC.md에 스펙을 작성하세요.\n`);
+  });
+
+program
+  .command("report")
+  .description("실행 리포트 (에이전트별 사용량, 세션 통계)")
+  .option("-p, --project <path>", "프로젝트 디렉토리 경로")
+  .action((opts) => {
+    report(opts.project);
   });
 
 program.parse();

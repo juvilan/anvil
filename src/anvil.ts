@@ -4,7 +4,9 @@ import { loadConfig } from "./config/loader.js";
 import { orchestrate, type LoopResult } from "./core/loop.js";
 import { deriveState, getProgressString } from "./core/state-machine.js";
 import { checkRecovery } from "./safety/crash-recovery.js";
-import { getMetrics } from "./utils/cost-tracker.js";
+import { getMetrics, generateReport } from "./utils/cost-tracker.js";
+// renderFinalReport는 CLI에서 사용 예정
+export { renderFinalReport } from "./utils/dashboard.js";
 import { configureLogger, logger } from "./utils/logger.js";
 
 export interface AutoOptions {
@@ -75,10 +77,18 @@ export async function resume(projectPath?: string): Promise<LoopResult> {
       totalTasks: recovery.state.totalTasks,
       completedTasks: recovery.state.completedTasks,
       abortReason: recovery.message,
+      durationMs: 0,
     };
   }
 
   logger.info(`복구 진행: ${recovery.message}`);
   const config = loadConfig(resolvedPath);
   return orchestrate(resolvedPath, config);
+}
+
+export function report(projectPath?: string): void {
+  const resolvedPath = resolve(projectPath ?? process.cwd());
+  const anvilDir = resolve(resolvedPath, ".anvil");
+  const reportText = generateReport(anvilDir);
+  console.log(reportText);
 }
