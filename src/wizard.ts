@@ -11,6 +11,7 @@ interface WizardAnswers {
   users: string;
   techPreference: string;
   constraints: string;
+  freeform: string;
 }
 
 export async function runSpecWizard(anvilDir: string, projectPath: string): Promise<boolean> {
@@ -79,12 +80,18 @@ async function askQuestions(rl: readline.Interface, projectPath: string): Promis
   console.log("       예: Python, JavaScript, React, TypeScript\n");
   const techPreference = await rl.question("  → ");
 
-  console.log("\n  5/5  꼭 있어야 하거나 없어야 하는 조건이 있나요?");
+  console.log("\n  5/6  꼭 있어야 하거나 없어야 하는 조건이 있나요?");
   console.log("       예: 회원가입 없이 사용 가능해야 함, 오프라인에서도 동작해야 함");
   console.log("       없으면 엔터\n");
   const constraints = await rl.question("  → ");
 
-  return { projectName, description, features, users, techPreference, constraints };
+  console.log("\n  6/6  마지막으로, 더 하고 싶은 말이 있으면 자유롭게 적어주세요.");
+  console.log("       머릿속에 있는 것을 그냥 주저리주저리 써도 됩니다.");
+  console.log("       어떤 느낌이었으면 좋겠다, 비슷한 서비스가 있다, 불편했던 점 등");
+  console.log("       Claude가 알아서 정리해 드립니다. 없으면 엔터\n");
+  const freeform = await rl.question("  → ");
+
+  return { projectName, description, features, users, techPreference, constraints, freeform };
 }
 
 async function generateSpec(answers: WizardAnswers, projectPath: string): Promise<string> {
@@ -96,6 +103,7 @@ User's answers:
 - Who will use it: ${answers.users || "(not specified)"}
 - Tech preference: ${answers.techPreference || "no preference — choose what's most appropriate"}
 - Constraints: ${answers.constraints || "none"}
+- Additional thoughts (free-form, may be unstructured): ${answers.freeform || "none"}
 - Project name: ${answers.projectName}
 
 Generate a SPEC.md with:
@@ -110,7 +118,8 @@ Rules:
 - Be specific enough that a developer could build it without asking questions
 - If tech was not specified, choose the most appropriate and common stack
 - Keep requirements numbered and concrete
-- Korean language throughout`;
+- Korean language throughout
+- The "Additional thoughts" field may be unstructured, rambling, or conversational — extract any useful requirements from it and incorporate them naturally into the spec. Ignore irrelevant parts.`;
 
   const result = await runClaude({
     prompt,
