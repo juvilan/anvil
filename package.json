@@ -1,0 +1,41 @@
+{
+  "name": "anvil-orchestrator",
+  "version": "0.1.0",
+  "description": "Claude Code orchestrator combining GSD concepts with forge quality system",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "anvil": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "start": "node dist/cli.js"
+  },
+  "keywords": [
+    "claude-code",
+    "orchestrator",
+    "ai-coding",
+    "forge",
+    "gsd"
+  ],
+  "author": "sangrokjung",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.0.0",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
