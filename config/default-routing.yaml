@@ -1,0 +1,54 @@
+# Anvil 기본 라우팅 테이블
+# 태스크 키워드 → forge 에이전트 매핑
+
+routing:
+  # 계획
+  - keywords: [구현 계획, implementation plan, 설계, design plan]
+    agent: planner
+    rules: [golden-principles]
+    model: opus
+
+  # 코드 리뷰
+  - keywords: [코드 리뷰, code review, 리뷰해줘, review]
+    agent: code-reviewer
+    rules: [golden-principles, coding-style, security]
+
+  # TDD
+  - keywords: [테스트, TDD, test first, 테스트 먼저]
+    agent: tdd-guide
+    rules: [golden-principles, verification]
+
+  # 보안
+  - keywords: [보안, security, 취약점, vulnerability]
+    agent: security-reviewer
+    rules: [security, golden-principles]
+    model: opus
+
+  # 빌드 에러
+  - keywords: [빌드 에러, build error, 타입 에러, type error]
+    agent: build-error-resolver
+    rules: [coding-style]
+
+  # 리팩토링
+  - keywords: [리팩토링, refactor, 정리, cleanup, 데드 코드]
+    agent: refactor-cleaner
+    rules: [coding-style, golden-principles]
+
+  # 데이터베이스
+  - keywords: [DB, SQL, 마이그레이션, migration, 스키마]
+    agent: database-reviewer
+    rules: [security]
+
+  # E2E 테스트
+  - keywords: [E2E, playwright, 유저 시나리오, e2e]
+    agent: e2e-runner
+    rules: [verification]
+
+  # 문서
+  - keywords: [문서, docs, README, 코드맵, documentation]
+    agent: doc-updater
+    rules: [golden-principles]
+
+# 매칭 없을 때 기본 규칙
+default:
+  rules: [golden-principles, coding-style, verification]
