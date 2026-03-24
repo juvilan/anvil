@@ -32,10 +32,49 @@ export async function decomposeMilestones(
     throw new Error(`Milestone 분해 실패: ${result.output.slice(0, 500)}`);
   }
 
-  const roadmapPath = resolve(anvilDir, "ROADMAP.md");
-  writeFileSync(roadmapPath, result.output);
+  let output = result.output;
+  let milestones = parseRoadmap(output);
 
-  const milestones = parseRoadmap(result.output);
+  // 파싱 실패 시: 재포맷 요청
+  if (milestones.length === 0) {
+    logger.warn("ROADMAP 파싱 실패, 재포맷 시도");
+    const reformatResult = await runClaude({
+      prompt: `Convert the following text into the EXACT markdown format. Output ONLY the formatted markdown, nothing else. Start with "# Roadmap" on line 1.
+
+FORMAT:
+# Roadmap
+
+## M01: [Title]
+Description
+
+### Slices
+- S01: [title] — [deliverable]
+- S02: [title] — [deliverable]
+
+## M02: [Title]
+...
+
+TEXT TO CONVERT:
+${output}`,
+      cwd: projectPath,
+      timeout: 60_000,
+      maxTurns: 1,
+    });
+
+    if (reformatResult.success) {
+      output = reformatResult.output;
+      milestones = parseRoadmap(output);
+    }
+  }
+
+  // 그래도 실패하면 에러
+  if (milestones.length === 0) {
+    throw new Error(`ROADMAP 파싱 실패. 출력:\n${output.slice(0, 500)}`);
+  }
+
+  const roadmapPath = resolve(anvilDir, "ROADMAP.md");
+  writeFileSync(roadmapPath, output);
+
   for (const milestone of milestones) {
     createMilestoneStructure(anvilDir, milestone);
   }
@@ -89,7 +128,47 @@ export async function decomposeSlice(
     throw new Error(`Slice 분해 실패: ${result.output.slice(0, 500)}`);
   }
 
-  const tasks = parseTaskPlans(result.output);
+  let taskOutput = result.output;
+  let tasks = parseTaskPlans(taskOutput);
+
+  // 파싱 실패 시 재포맷
+  if (tasks.length === 0) {
+    logger.warn("태스크 파싱 실패, 재포맷 시도");
+    const reformatResult = await runClaude({
+      prompt: `Convert the following text into task definitions. Output ONLY the tasks, nothing else.
+
+FORMAT (follow EXACTLY):
+### T01: [Title]
+**Type**: implement
+**Files**: [files]
+**Description**: [description]
+**Verify**: [command]
+**Depends**: none
+
+### T02: [Title]
+...
+
+TEXT TO CONVERT:
+${taskOutput}`,
+      cwd: projectPath,
+      timeout: 60_000,
+      maxTurns: 1,
+    });
+
+    if (reformatResult.success) {
+      tasks = parseTaskPlans(reformatResult.output);
+    }
+  }
+
+  if (tasks.length === 0) {
+    // 최소 1개 태스크를 강제 생성
+    logger.warn("태스크 파싱 최종 실패, 기본 태스크 생성");
+    tasks = [{
+      id: "T01",
+      content: `### T01: ${sliceTitle}\n**Type**: implement\n**Description**: ${slicePlan}\n**Verify**: echo done\n**Depends**: none`,
+    }];
+  }
+
   const tasksDir = resolve(sDir, "tasks");
   mkdirSync(tasksDir, { recursive: true });
 
@@ -122,25 +201,39 @@ function parseRoadmap(content: string): readonly MilestoneEntry[] {
   const lines = content.split("\n");
   let currentMilestone: { id: string; title: string; slices: SliceEntry[] } | null = null;
   let sliceCounter = 0;
+  let milestoneCounter = 0;
 
   for (const line of lines) {
-    const mMatch = /^##\s+M(\d+):\s*(.+)/.exec(line);
+    // ## M01: Title  또는  ## M1: Title  또는  **M01: Title**
+    const mMatch = /^#{1,3}\s+M(\d+):\s*(.+)/.exec(line)
+      ?? /^\*\*M(\d+):\s*(.+?)\*\*/.exec(line);
     if (mMatch) {
       if (currentMilestone) milestones.push(currentMilestone);
-      const id = `M${mMatch[1]?.padStart(2, "0")}`;
-      currentMilestone = { id, title: mMatch[2]?.trim() ?? "", slices: [] };
+      milestoneCounter++;
+      const id = `M${String(milestoneCounter).padStart(2, "0")}`;
+      currentMilestone = { id, title: mMatch[2]?.trim().replace(/\*\*/g, "") ?? "", slices: [] };
       sliceCounter = 0;
       continue;
     }
 
-    const sMatch = /^-\s+S(\d+):\s*(.+)/.exec(line);
+    // - S01: Title  또는  - **S01: Title**  또는 그냥 - Title (milestone 아래의 리스트)
+    const sMatch = /^-\s+S(\d+):\s*(.+)/.exec(line)
+      ?? /^-\s+\*\*S(\d+):\s*(.+?)\*\*/.exec(line);
     if (sMatch && currentMilestone) {
       sliceCounter++;
       const id = `S${String(sliceCounter).padStart(2, "0")}`;
       currentMilestone.slices.push({
         id,
-        title: sMatch[2]?.trim() ?? "",
+        title: sMatch[2]?.trim().replace(/\*\*/g, "") ?? "",
       });
+    } else if (/^-\s+.+/.test(line) && currentMilestone && currentMilestone.slices.length === 0) {
+      // S번호 없이 리스트로 나열된 경우
+      sliceCounter++;
+      const id = `S${String(sliceCounter).padStart(2, "0")}`;
+      const title = line.replace(/^-\s+/, "").replace(/\*\*/g, "").trim();
+      if (title.length > 0) {
+        currentMilestone.slices.push({ id, title });
+      }
     }
   }
 

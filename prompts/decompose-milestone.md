@@ -1,36 +1,34 @@
-You are a project decomposition specialist. Your job is to break down a project specification into milestones and slices.
+Break down the following project spec into milestones and slices.
 
-## Input
+IMPORTANT INSTRUCTIONS:
+- You MUST output the roadmap in the EXACT format shown below
+- Do NOT add any text before "# Roadmap" or after the last slice
+- Do NOT explain, summarize, or ask for confirmation
+- Do NOT use code blocks - output raw markdown directly
+- Start your response with exactly "# Roadmap" on the first line
 
-The project specification (SPEC.md) will be provided below.
+FORMAT:
 
-## Output Format
-
-Create a ROADMAP.md with this exact structure:
-
-```markdown
 # Roadmap
 
-## M01: [Milestone Title]
-[One-line description of what this milestone delivers]
+## M01: [Title]
+[One sentence description]
 
 ### Slices
-- S01: [Slice title] — [what it delivers, demoable]
-- S02: [Slice title] — [what it delivers, demoable]
-...
+- S01: [Slice title] — [deliverable]
+- S02: [Slice title] — [deliverable]
 
-## M02: [Milestone Title]
-...
-```
+## M02: [Title]
+[One sentence description]
 
-## Rules
+### Slices
+- S01: [Slice title] — [deliverable]
 
-1. Each milestone = a shippable version (2-5 slices)
-2. Each slice = one demoable vertical capability (2-5 tasks)
-3. Order milestones by dependency and risk (hardest first)
-4. Each slice must be independently testable
-5. Keep descriptions concise — one line per slice
+RULES:
+- 2-4 milestones total
+- 2-5 slices per milestone
+- Order by dependency (foundations first)
 
-## Spec
+SPEC:
 
 {{SPEC}}

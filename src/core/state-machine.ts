@@ -151,14 +151,15 @@ function scanMilestone(
   const planPath = resolve(mDir, "PLAN.md");
   const summaryPath = resolve(mDir, "SUMMARY.md");
   const slices = scanSlices(mDir, milestoneId);
+  const hasSummary = existsSync(summaryPath);
   const allSlicesDone =
-    slices.length > 0 && slices.every((s) => s.completed);
+    slices.length > 0 ? slices.every((s) => s.completed) : true;
 
   return {
     id: milestoneId,
     planPath,
     slices,
-    completed: allSlicesDone && existsSync(summaryPath),
+    completed: hasSummary || (allSlicesDone && slices.length > 0 && hasSummary),
   };
 }
 

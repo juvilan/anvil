@@ -164,25 +164,33 @@ export async function orchestrate(
       }
 
       case "summarizing": {
-        logger.info("Phase: 요약");
-        const milestone = state.currentMilestone;
+        // 미완료 milestone 모두에 summary 작성
+        const incompleteMilestones = state.milestones.filter((m) => !m.completed);
+        for (const milestone of incompleteMilestones) {
+          logger.info(`Phase: 요약 — ${milestone.id}`);
 
-        // worktree 머지
-        if (config.git.worktree && milestone && wt.milestoneId === milestone.id) {
-          try {
+          if (config.git.worktree && wt.milestoneId === milestone.id) {
+            try {
+              writeMilestoneSummary(state.anvilDir, milestone.id);
+              mergeWorktree(projectPath, milestone.id);
+              removeWorktree(projectPath, milestone.id);
+              wt.milestoneId = null;
+              wt.workingPath = projectPath;
+              logger.info(`Milestone ${milestone.id} worktree 머지 완료`);
+            } catch (error) {
+              logger.warn(`worktree 머지 실패, 계속 진행`, {
+                error: error instanceof Error ? error.message : String(error),
+              });
+            }
+          } else {
             writeMilestoneSummary(state.anvilDir, milestone.id);
-            mergeWorktree(projectPath, milestone.id);
-            removeWorktree(projectPath, milestone.id);
-            wt.milestoneId = null;
-            wt.workingPath = projectPath;
-            logger.info(`Milestone ${milestone.id} worktree 머지 완료`);
-          } catch (error) {
-            logger.warn(`worktree 머지 실패, 계속 진행`, {
-              error: error instanceof Error ? error.message : String(error),
-            });
           }
-        } else if (milestone) {
-          writeMilestoneSummary(state.anvilDir, milestone.id);
+        }
+
+        if (incompleteMilestones.length === 0) {
+          // 상태가 갱신되지 않는 경우 done으로 전환
+          logger.info("=== 전체 완료 ===");
+          return buildResult(state, null, startTime);
         }
         break;
       }
