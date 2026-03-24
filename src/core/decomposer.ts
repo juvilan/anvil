@@ -243,11 +243,12 @@ function parseRoadmap(content: string): readonly MilestoneEntry[] {
 
 function parseTaskPlans(content: string): readonly TaskEntry[] {
   const tasks: TaskEntry[] = [];
-  const sections = content.split(/(?=###\s+T\d+:)/);
+  // Split on ### T01: or **T01:** or T01: at line start
+  const sections = content.split(/(?=(?:#{1,3}\s+)?(?:\*\*)?T\d+[:\s])/);
 
   let counter = 0;
   for (const section of sections) {
-    const match = /^###\s+T(\d+):\s*/.exec(section.trim());
+    const match = /^(?:#{1,3}\s+)?(?:\*\*)?T(\d+)[:\s]/.exec(section.trim());
     if (match) {
       counter++;
       const id = `T${String(counter).padStart(2, "0")}`;

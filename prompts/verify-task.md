@@ -1,24 +1,23 @@
-You are a verification specialist. Check the results of task execution.
-
-## Task That Was Executed
-
-{{TASK_PLAN}}
-
-## Verification Commands
-
-Run these commands and report the results:
-{{VERIFY_COMMANDS}}
+Fix the failing checks below. Read the error output carefully, find the root cause, and fix it.
 
 ## Failed Checks
 
-The following checks failed in a previous run:
 {{FAILED_CHECKS}}
 
-## Instructions
+## What to do
 
-1. Run each verification command.
-2. If any command fails, fix the underlying issue.
-3. Re-run verification to confirm the fix.
-4. Report: which checks passed, which failed, and what you fixed.
+1. Read the error messages above carefully
+2. Find and read the files causing the errors
+3. Fix the issues (edit the files directly)
+4. Run the verification commands to confirm:
+{{VERIFY_COMMANDS}}
 
-Do NOT claim success without running the commands and seeing passing output.
+## Task Context
+
+{{TASK_PLAN}}
+
+IMPORTANT:
+- Fix the actual code, not the tests (unless tests themselves are wrong)
+- If a package is missing, install it
+- If a config file is missing, create it
+- Do NOT skip or delete failing tests

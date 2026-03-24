@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { deriveState, type AnvilState } from "./state-machine.js";
@@ -303,22 +303,30 @@ function writeMilestoneSummary(anvilDir: string, milestoneId: string): void {
   writeFileSync(summaryPath, content);
 }
 
+function sanitizeTaskId(taskId: string): string {
+  return taskId.replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
 function autoCommit(projectPath: string, taskId: string): void {
   try {
-    execSync("git add -A", { cwd: projectPath, stdio: "pipe" });
-    const status = execSync("git status --porcelain", {
+    const safeId = sanitizeTaskId(taskId);
+    execFileSync("git", ["add", "-A"], { cwd: projectPath, stdio: "pipe" });
+    const gitStatus = execFileSync("git", ["status", "--porcelain"], {
       cwd: projectPath,
       encoding: "utf-8",
       stdio: "pipe",
     });
 
-    if (status.trim()) {
-      execSync(`git commit -m "feat(${taskId}): task completed by anvil"`, {
-        cwd: projectPath,
-        stdio: "pipe",
-      });
-      logger.info(`자동 커밋: ${taskId}`);
-    }
+    if (!gitStatus.trim()) return;
+
+    const commitMsg = `feat(${safeId}): task completed by anvil`;
+
+    execFileSync("git", ["commit", "-m", commitMsg], {
+      cwd: projectPath,
+      stdio: "pipe",
+    });
+
+    logger.info(`자동 커밋: ${safeId}`);
   } catch (error) {
     logger.warn("자동 커밋 실패", {
       error: error instanceof Error ? error.message : String(error),
