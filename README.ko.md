@@ -62,6 +62,53 @@ done          모든 milestone 완료
 
 ## 빠른 시작
 
+### 비개발자 — 마법사로 시작 (권장)
+
+```bash
+# 1. Anvil 설치
+git clone https://github.com/juvilan/anvil.git
+cd anvil && npm install && npm run build
+
+# 2. 프로젝트 폴더로 이동 후 초기화
+cd ~/my-project
+node ~/anvil/dist/cli.js init
+```
+
+`anvil init`을 실행하면 6가지 질문을 안내합니다:
+
+```
+  1/6  무엇을 만들고 싶으신가요?
+       예: 할 일 목록 앱, 성적 관리 도구, 날씨 알림 봇
+  → 학생 출석 관리 프로그램
+
+  2/6  어떤 기능이 필요한가요?
+  → 학생 이름 등록, 날짜별 출석/결석 기록, 월별 통계 출력
+
+  3/6  누가 어떻게 사용하나요?
+  → 선생님이 터미널에서 쓰는 도구
+
+  4/6  특별히 원하는 프로그래밍 언어나 기술이 있나요? (모르면 엔터)
+  → (엔터)
+
+  5/6  꼭 있어야 하거나 없어야 하는 조건이 있나요?
+  → 데이터는 파일로 저장
+
+  6/6  마지막으로, 더 하고 싶은 말이 있으면 자유롭게 적어주세요.
+       머릿속에 있는 것을 그냥 주저리주저리 써도 됩니다.
+
+       예시: "예전에 쓰던 출석부가 엑셀이었는데 너무 불편했어요.
+       학생 이름 치면 오늘 출석 체크되고, 한 달치 보면 누가 몇 번
+       빠졌는지 바로 보이면 좋겠어요. 색깔 같은 건 없어도 되고
+       숫자만 나와도 충분할 것 같아요."
+  → (자유롭게 입력)
+```
+
+Claude가 답변을 읽고 SPEC.md를 자동 생성합니다. 내용을 확인하고 `anvil auto`를 실행하면 끝입니다.
+
+---
+
+### 개발자 — 직접 스펙 작성
+
 ```bash
 # 1. Anvil 설치
 git clone https://github.com/juvilan/anvil.git
@@ -70,11 +117,11 @@ cd anvil && npm install && npm run build
 # 2. (권장) claude-forge 설치
 # https://github.com/sangrokjung/claude-forge
 
-# 3. 프로젝트 초기화
+# 3. 프로젝트 초기화 (마법사 건너뜀)
 cd ~/my-project
-node ~/anvil/dist/cli.js init
+node ~/anvil/dist/cli.js init --no-wizard
 
-# 4. 스펙 작성
+# 4. 스펙 직접 작성
 cat > .anvil/SPEC.md << 'EOF'
 # 내 프로젝트
 

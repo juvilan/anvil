@@ -62,6 +62,54 @@ done          all milestones complete
 
 ## Quick Start
 
+### Non-developers — Use the wizard (recommended)
+
+```bash
+# 1. Install Anvil
+git clone https://github.com/juvilan/anvil.git
+cd anvil && npm install && npm run build
+
+# 2. Initialize your project
+cd ~/my-project
+node ~/anvil/dist/cli.js init
+```
+
+`anvil init` walks you through 6 plain-language questions:
+
+```
+  1/6  What do you want to build?
+       e.g. todo list app, attendance tracker, weather bot
+  → Student attendance management program
+
+  2/6  What features do you need?
+  → Register students, record attendance/absence by date, monthly stats
+
+  3/6  Who will use it and how?
+  → A teacher using it from the terminal
+
+  4/6  Any preferred language or technology? (press Enter to skip)
+  → (Enter — Claude will choose)
+
+  5/6  Any hard requirements or things to avoid?
+  → Data should be saved to a file
+
+  6/6  Anything else? Feel free to just ramble.
+       What it should feel like, similar tools you've used, pain points —
+       anything. Claude will sort it out.
+
+       Example: "I used to manage attendance in Excel and it was such a pain.
+       I just want to type a student's name and mark them present, then
+       later see at a glance who's been absent the most. No fancy colors
+       needed — plain numbers are totally fine."
+  → (type freely)
+```
+
+Claude reads your answers and generates a SPEC.md automatically. Review it, then run `anvil auto`.
+
+---
+
+### Developers — Write your own spec
+
 ```bash
 # 1. Install Anvil
 git clone https://github.com/juvilan/anvil.git
@@ -70,9 +118,9 @@ cd anvil && npm install && npm run build
 # 2. (Recommended) Install claude-forge for agent routing
 # https://github.com/sangrokjung/claude-forge
 
-# 3. Initialize your project
+# 3. Initialize without wizard
 cd ~/my-project
-node ~/anvil/dist/cli.js init
+node ~/anvil/dist/cli.js init --no-wizard
 
 # 4. Write your spec
 cat > .anvil/SPEC.md << 'EOF'

@@ -88,7 +88,12 @@ async function askQuestions(rl: readline.Interface, projectPath: string): Promis
   console.log("\n  6/6  마지막으로, 더 하고 싶은 말이 있으면 자유롭게 적어주세요.");
   console.log("       머릿속에 있는 것을 그냥 주저리주저리 써도 됩니다.");
   console.log("       어떤 느낌이었으면 좋겠다, 비슷한 서비스가 있다, 불편했던 점 등");
-  console.log("       Claude가 알아서 정리해 드립니다. 없으면 엔터\n");
+  console.log("       Claude가 알아서 정리해 드립니다. 없으면 엔터");
+  console.log("");
+  console.log("       예시: \"예전에 쓰던 출석부가 엑셀이었는데 너무 불편했어요.");
+  console.log("       학생 이름 치면 오늘 출석 체크되고, 한 달치 보면 누가 몇 번");
+  console.log("       빠졌는지 바로 보이면 좋겠어요. 색깔 같은 건 없어도 되고");
+  console.log("       숫자만 나와도 충분할 것 같아요.\"\n");
   const freeform = await rl.question("  → ");
 
   return { projectName, description, features, users, techPreference, constraints, freeform };
