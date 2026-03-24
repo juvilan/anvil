@@ -80,8 +80,9 @@ program
 
 program
   .command("init")
-  .description("프로젝트에 .anvil/ 디렉토리 초기화")
+  .description("프로젝트에 .anvil/ 디렉토리 초기화 (스펙 마법사 포함)")
   .option("-p, --project <path>", "프로젝트 디렉토리 경로")
+  .option("--no-wizard", "대화형 스펙 마법사 건너뛰기 (고급 사용자용)")
   .action(async (opts) => {
     const { mkdirSync, writeFileSync } = await import("node:fs");
     const { resolve } = await import("node:path");
@@ -90,13 +91,14 @@ program
 
     mkdirSync(anvilDir, { recursive: true });
 
+    const projectName = projectPath.split("/").pop() ?? "my-project";
     const configContent = `version: 1
 
 forge:
   path: ~/.claude
 
 project:
-  name: ${projectPath.split("/").pop() ?? "my-project"}
+  name: ${projectName}
   taskTimeout: 300000
   maxTurns: 10
 
@@ -114,8 +116,28 @@ git:
 `;
 
     writeFileSync(resolve(anvilDir, "config.yaml"), configContent);
-    console.log(`\n  .anvil/ 초기화 완료: ${anvilDir}`);
-    console.log(`  다음 단계: .anvil/SPEC.md에 스펙을 작성하세요.\n`);
+    console.log(`\n  .anvil/ 초기화 완료`);
+
+    if (opts.wizard === false) {
+      // --no-wizard
+      console.log(`  다음 단계: .anvil/SPEC.md에 스펙을 직접 작성하고 anvil auto를 실행하세요.\n`);
+      return;
+    }
+
+    // 대화형 마법사 실행
+    try {
+      const { runSpecWizard } = await import("./wizard.js");
+      const ready = await runSpecWizard(anvilDir, projectPath);
+      if (ready) {
+        console.log(`  이제 실행하세요:\n`);
+        console.log(`    anvil auto\n`);
+      }
+    } catch (error) {
+      console.error(
+        `\n  마법사 에러: ${error instanceof Error ? error.message : String(error)}`
+      );
+      console.log(`  .anvil/SPEC.md를 직접 작성하고 anvil auto를 실행하세요.\n`);
+    }
   });
 
 program
