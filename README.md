@@ -1,6 +1,20 @@
-# Anvil
+<div align="center">
 
-> Claude Code orchestrator combining [GSD](https://github.com/gsd-build/get-shit-done) concepts with [claude-forge](https://github.com/sangrokjung/claude-forge) quality system.
+# ⚒️ Anvil
+
+**Claude Code Orchestrator**
+
+*[GSD](https://github.com/gsd-build/get-shit-done) concepts × [claude-forge](https://github.com/sangrokjung/claude-forge) quality system*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green)](https://nodejs.org)
+[![Claude Code](https://img.shields.io/badge/Powered%20by-Claude%20Code-blueviolet)](https://claude.ai/claude-code)
+
+</div>
+
+---
+
+Anvil breaks down project specs into context-window-sized tasks, routes each task to a specialized forge agent, and executes them in fresh Claude Code sessions — keeping context clean and code quality high.
 
 Anvil breaks down project specs into context-window-sized tasks, routes each task to a specialized forge agent, and executes them in fresh Claude Code sessions — keeping context clean and code quality high.
 

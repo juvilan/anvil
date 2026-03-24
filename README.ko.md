@@ -1,6 +1,20 @@
-# Anvil
+<div align="center">
 
-> [GSD](https://github.com/gsd-build/get-shit-done) 오케스트레이션 개념 + [claude-forge](https://github.com/sangrokjung/claude-forge) 품질 시스템을 결합한 Claude Code 오케스트레이터.
+# ⚒️ Anvil
+
+**Claude Code 오케스트레이터**
+
+*[GSD](https://github.com/gsd-build/get-shit-done) 개념 × [claude-forge](https://github.com/sangrokjung/claude-forge) 품질 시스템*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green)](https://nodejs.org)
+[![Claude Code](https://img.shields.io/badge/Powered%20by-Claude%20Code-blueviolet)](https://claude.ai/claude-code)
+
+</div>
+
+---
+
+프로젝트 스펙을 컨텍스트 윈도우 크기의 태스크로 분해하고, 각 태스크를 전문 forge 에이전트에 라우팅하여, 깨끗한 fresh 세션에서 실행합니다.
 
 프로젝트 스펙을 컨텍스트 윈도우 크기의 태스크로 분해하고, 각 태스크를 전문 forge 에이전트에 라우팅하여, 깨끗한 fresh 세션에서 실행합니다.
 
