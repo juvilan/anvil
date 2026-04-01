@@ -18,7 +18,10 @@ export interface CommandResult {
   readonly passed: boolean;
 }
 
-export function discoverVerifyCommands(projectPath: string): readonly string[] {
+export function discoverVerifyCommands(
+  projectPath: string,
+  customCommands?: readonly string[]
+): readonly string[] {
   const commands: string[] = [];
 
   const pkgPath = resolve(projectPath, "package.json");
@@ -41,6 +44,14 @@ export function discoverVerifyCommands(projectPath: string): readonly string[] {
   if (existsSync(makefilePath)) {
     const content = readFileSync(makefilePath, "utf-8");
     if (content.includes("test:")) commands.push("make test");
+  }
+
+  if (customCommands) {
+    for (const cmd of customCommands) {
+      if (cmd && cmd !== "echo 'no verify command'" && !commands.includes(cmd)) {
+        commands.push(cmd);
+      }
+    }
   }
 
   return commands;

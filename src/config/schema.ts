@@ -39,6 +39,7 @@ export const AnvilConfigSchema = z.object({
       enabled: z.boolean().default(true),
       autoFix: z.boolean().default(true),
       ironLaw: z.boolean().default(true),
+      customCommands: z.array(z.string()).default([]),
     })
     .default({}),
 

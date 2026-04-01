@@ -120,6 +120,12 @@ export async function orchestrate(
                 timestamp: new Date().toISOString(),
               });
             }
+            if (config.verification.enabled && result.success) {
+              const taskInfo = independentTasks.find((t) => t.id === result.taskId);
+              if (taskInfo) {
+                await runVerificationGate(state, taskInfo, config);
+              }
+            }
             if (config.git.autoCommit && result.success) {
               autoCommit(wt.workingPath, result.taskId);
             }
@@ -215,7 +221,10 @@ async function runVerificationGate(
   task: { readonly id: string; readonly planPath: string },
   config: AnvilConfig
 ): Promise<void> {
-  const commands = discoverVerifyCommands(state.projectPath);
+  const commands = discoverVerifyCommands(
+    state.projectPath,
+    config.verification.customCommands
+  );
   if (commands.length === 0) {
     logger.info("검증 명령어 없음, 스킵");
     return;
